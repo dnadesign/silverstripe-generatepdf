@@ -38,10 +38,10 @@ class GeneratePDF extends DataExtension {
 				$url = (Versioned::current_stage() == 'Live' && file_exists($path)) ?  Director::baseURL() . preg_replace('#^/#', '', Director::makeRelative($path)) : $this->owner->Link('downloadPDF');
 				break;
 			case 'download':
-				$url = 	(Versioned::current_stage() == 'Live') ? $this->owner->Link('downloadPDF') : $this->owner->Link();
+				$url = 	(Versioned::current_stage() == 'Live') ? $this->owner->Link('downloadPDF') : null;
 				break;
 			default:
-				$url = 	$this->owner->Link();
+				$url = null;
 				break;
 		}
 
@@ -137,14 +137,16 @@ class GeneratePDF_Controller extends Extension {
 
 		// prepare the paths
 		$pdfFile = $record->getPdfFilename();
-		$bodyFile = str_replace('.pdf', '_pdf.html', $pdfFile);
+		$bodyFile = str_replace('.pdf', '_pdf.html', $pdfFile);		
 
 		// make sure the work directory exists
 		if(!file_exists(dirname($pdfFile))) Filesystem::makeFolder(dirname($pdfFile));
 
+		// Make sure we use the Live version of record
+		$live_record = Versioned::get_by_stage($record->ClassName, 'Live')->byID($record->ID);
 		// write the output of this page to HTML, ready for conversion to PDF
-		Requirements::clear();
-		file_put_contents($bodyFile, $this->owner->render($record));
+		Requirements::clear();		
+		file_put_contents($bodyFile, $this->owner->render($live_record));
 
 		// finally, generate the PDF
 		$command = WKHTMLTOPDF_BINARY . ' --outline -B 40pt -L 20pt -R 20pt -T 20pt --encoding utf-8 ' .
