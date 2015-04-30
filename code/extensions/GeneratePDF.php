@@ -69,7 +69,11 @@ class GeneratePDF extends DataExtension {
 	* Invoke the generatePDF method on Controller
 	* And prompt user with status message
 	*/
-	public function regeneratePDF() {
+	public function doGeneratePDF() {
+		// Delete previous version
+		$this->owner->regeneratePDF();
+
+		// Trigger PDF generation
 		$controller = singleton($this->owner->ClassName.'_Controller');
 		if (!$controller) {
 			$this->owner->popupCMSError('No controller found!');
@@ -90,6 +94,17 @@ class GeneratePDF extends DataExtension {
 	public function popupCMSError($message='The action is not allowed', $errorCode=403)	{
         header("HTTP/1.1 $errorCode $message");
         exit;
+	}
+
+	/**
+	* Unlink the generated PDF, so to be recreated upon request
+	*/
+	public function regeneratePDF() {
+
+		$filepath = $this->owner->getPdfFilename();
+		if(file_exists($filepath)) {
+			unlink($filepath);
+		}		
 	}
 
 }
