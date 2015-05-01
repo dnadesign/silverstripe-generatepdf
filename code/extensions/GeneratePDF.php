@@ -135,6 +135,10 @@ class GeneratePDF_Controller extends Extension {
 	*/
 	public function generatePDF($record = null) {
 
+		// Make sure we are on the live stage
+		$currentStage = Versioned::current_stage();
+		Versioned::reading_stage('Live');
+
 		if (!$record) { $record = $this->owner->dataRecord; }
 
 		$binaryPath = Config::inst()->get($record->ClassName, 'wkhtmltopdf_binary');
@@ -172,6 +176,9 @@ class GeneratePDF_Controller extends Extension {
 
 		// remove temporary file
 		unlink($bodyFile);
+
+		// Restores stage
+		Versioned::reading_stage($currentStage);
 
 		// output any errors
 		if($return_val != 0) {
