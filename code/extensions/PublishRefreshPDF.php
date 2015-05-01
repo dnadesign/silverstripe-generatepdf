@@ -6,27 +6,49 @@
 
 class PublishRefreshPDF extends DataExtension {
 
+	/*
+	* Pages
+	*/
 	public function onAfterPublish(&$original) {
 
 		$type = $this->owner->class;
 		$currentPage = null;
 
-		/*
-		* Pages
-		*/
 		if (is_subclass_of($type, 'SiteTree')) {
 			$currentPage = $this->owner;
-		}
-		/*
-		* Widget
-		*/
-		else if(is_subclass_of($type, 'BaseElement')) {
-			$currentPage = $this->owner->getPage();
-		}
+			if ($currentPage->exists()) {
+				$this->owner->triggerGeneratePDF($currentPage);
+			}
+		}		
+	}
 
-		/* Republish */
-		if ($currentPage) {
-			$parents = self::getParents($currentPage);
+	/**
+	* Versioned DataObject (Elemental)
+	*/
+	public function onAfterVersionedPublish($fromStage, $toStage, $createNewVersion) {
+
+		if ($toStage == "Live") {
+
+			$type = $this->owner->class;
+			$currentPage = null;
+
+			if(is_subclass_of($type, 'BaseElement')) {
+				$currentPage = $this->owner->getPage();
+				if ($currentPage->exists()) {
+					$this->owner->triggerGeneratePDF($currentPage);
+				}
+			}
+		}
+	}
+
+	/**
+	* Call method regeneratePDF() on supplied page and its parents
+	* if extend AutoGeneratePDF
+	*/
+	public function triggerGeneratePDF($page = null) {
+
+		if ($page) {
+			$parents = self::getParents($page);
 
 			foreach($parents as $parent) {
 				if ($parent->hasExtension('AutoGeneratePDF')) {
@@ -37,6 +59,9 @@ class PublishRefreshPDF extends DataExtension {
 		}
 	}
 
+	/**
+	* Go throught tree upward to find all parents
+	*/
 	private static function getParents(SiteTree $page) {
 
 		$parents = array();
