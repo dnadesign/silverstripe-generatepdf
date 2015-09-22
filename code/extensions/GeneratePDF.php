@@ -168,7 +168,7 @@ class GeneratePDF_Controller extends Extension {
 		file_put_contents($bodyFile, $this->owner->render($live_record));
 
 		// finally, generate the PDF
-		$command = WKHTMLTOPDF_BINARY . ' --outline -B 40pt -L 20pt -R 20pt -T 20pt --encoding utf-8 ' .
+		$command = $binaryPath . ' --outline -B 40pt -L 20pt -R 20pt -T 20pt --encoding utf-8 ' .
 			'--orientation Portrait --disable-javascript --print-media-type --quiet';
 		$retVal = 0;
 		$output = array();
