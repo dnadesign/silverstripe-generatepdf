@@ -4,6 +4,7 @@ This extension allow for a PDF version of any page to be created and served eith
 
 ## Requirements
 - Silverstripe 3.1
+- [WKHTMLTOPDF library](http://wkhtmltopdf.org/)
 
 ## Installation
 
@@ -19,7 +20,13 @@ Extend any page type with the GeneratePDF extension as well as the page type con
 	   
     Page_Controller:
 	  extensions:
-	    - GeneratePDF_Controller    
+	    - GeneratePDF_Controller
+
+**Define WKHTMLTOPDF path**
+To use the library locally, you can define the path in the yaml file
+
+	Page:
+  		wkhtmltopdf_binary: /usr/local/bin/wkhtmltopdf
 
 
 ## Configuration
