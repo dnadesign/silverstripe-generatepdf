@@ -8,6 +8,10 @@ class GeneratePDF extends DataExtension {
 
 	private static $generated_pdf_path = 'assets/_generated_pdfs';
 
+	public static function getPath() {
+		return self::$generated_pdf_path;
+	}
+
 	/**
 	 * Return the full filename of the pdf file, including path & extension
 	 */
