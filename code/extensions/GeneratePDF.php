@@ -173,7 +173,7 @@ class GeneratePDF_Controller extends Extension {
 
 		// finally, generate the PDF
 		$command = $binaryPath . ' --outline -B 40pt -L 20pt -R 20pt -T 20pt --encoding utf-8 ' .
-			'--orientation Portrait --disable-javascript --print-media-type --quiet';
+			'--orientation Portrait --disable-javascript --print-media-type ';
 		$retVal = 0;
 		$output = array();
 		exec($command . " \"$bodyFile\" \"$pdfFile\" &> /dev/stdout", $output, $return_val);
