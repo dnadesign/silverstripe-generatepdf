@@ -91,23 +91,28 @@ class GeneratePDF extends DataExtension
 
         // Trigger PDF generation
         $controller = singleton($this->owner->ClassName.'_Controller');
+
         if (!$controller) {
             $this->owner->popupCMSError('No controller found!');
         }
 
         if ($controller->hasExtension('GeneratePDF_Controller')) {
+
             $success = $controller->generatePDF($this->owner);
+
             if ($success) {
-                $this->owner->popupCMSError('Successfully generated PDF version.');
+                // this cms error calls exit which kills publish
+                // $this->owner->popupCMSError('Successfully generated PDF version.');
             } else {
                 $this->owner->popupCMSError('Something went wrong while generating the PDF!');
             }
+
         } else {
             $this->owner->popupCMSError('The method "generatePDF()" does not exists on '.$this->owner->ClassName.'_Controller!');
         }
     }
 
-    public function popupCMSError($message='The action is not allowed', $errorCode=403)
+    public function popupCMSError($message='The action is not allowed', $errorCode=200)
     {
         header("HTTP/1.1 $errorCode $message");
         exit;
@@ -132,7 +137,7 @@ class GeneratePDF_Controller extends Extension
     private static $allowed_actions = array('downloadPDF');
 
     /*
-    * Trigger file download 
+    * Trigger file download
     * If does not exist, generate it.
     */
     public function downloadPDF()
